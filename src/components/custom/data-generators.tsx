@@ -67,7 +67,7 @@ export interface RecentSale {
 export async function getRecentSales() {
   const recentSales: RecentSale[] = [];
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 5; i++) {
     recentSales.push({
       id: faker.string.uuid(),
       name: faker.person.fullName(),
