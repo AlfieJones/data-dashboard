@@ -1,9 +1,11 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Stat, getHeadlineStats } from "./data-generators";
 import { BanknotesIcon, CurrencyPoundIcon, UserGroupIcon } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
+import { Stat } from "@/app/data/stats/route";
+import { useRef } from "react";
+import { useMeasurePerformance } from "@/lib/utils";
 
 const iconRepo = {
   pound: CurrencyPoundIcon,
@@ -11,16 +13,19 @@ const iconRepo = {
   users: UserGroupIcon,
 };
 
-export function HeadlineStats() {
-  const [stats, setStats] = useState<Stat[]>([]);
 
-  useEffect(() => {
-    getHeadlineStats().then((data) => setStats(data));
-  }, []);
+
+
+
+export function HeadlineStats() {
+
+  const { measure } = useMeasurePerformance("HeadlineStats");
+
+  const { data: stats } = useQuery({ queryKey: ["headlineStats"], queryFn: () => measure(() => fetch("/data/stats").then(res => res.json() as Promise<Stat[]>)) });
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => {
+      {stats?.map((stat) => {
         const Icon = iconRepo[stat.icon as keyof typeof iconRepo];
 
         return (

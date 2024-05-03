@@ -1,19 +1,22 @@
 "use client";
 
+import { RecentSale } from "@/app/data/sales/route";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState, useEffect } from "react";
-import { RecentSale, getRecentSales } from "./data-generators";
+import { useMeasurePerformance } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 export function RecentSales() {
-  const [recentSales, setRecentSales] = useState<RecentSale[]>([]);
 
-  useEffect(() => {
-    getRecentSales().then((data) => setRecentSales(data));
-  }, []);
+
+  const { measure } = useMeasurePerformance("recentSales");
+
+
+  const { data: recentSales } = useQuery({ queryKey: ["sales"], queryFn: () => measure(() => fetch("/data/sales").then(res => res.json() as Promise<RecentSale[]>)) });
+
 
   return (
     <div className="space-y-8">
-      {recentSales.map((sale) => (
+      {recentSales?.map((sale) => (
         <div className="flex items-center" key={sale.id}>
           <Avatar className="h-9 w-9">
             <AvatarImage src={sale.avatar} alt="Avatar" />
@@ -31,3 +34,4 @@ export function RecentSales() {
     </div>
   );
 }
+
